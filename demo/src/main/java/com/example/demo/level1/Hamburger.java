@@ -1,5 +1,7 @@
 package com.example.demo.level1;
 
+import java.util.Stack;
+
 public class Hamburger {
     public static void main(String[] args) {
         int[] ingrdnts = {2, 1, 1, 2, 3, 1, 2, 3, 1};
@@ -11,26 +13,28 @@ public class Hamburger {
 class SolHam {
     public int solution(int[] ingredient) {
         int answer = 0;
-        StringBuilder ingredientString = new StringBuilder();
-        // int 배열을 string으로 변환
-        for (int i = 0; i < ingredient.length; i++) {
-            ingredientString.append(ingredient[i]);
-        }
-        // string 길이가 4 이상일 때까지 반복
-        while(ingredientString.length() >= 4 ) {
-            System.out.println("재료 문자열: " + ingredientString);
-            // 문자열이 1231 포함하면
-            int firstHam = ingredientString.toString().indexOf("1231");
-            System.out.println("햄버거 위치: " + firstHam);
-            if(firstHam < 0) {
-                return answer;
+        Stack<Integer> ingredientStack = new Stack<>();
+        for(int i = 0; i < ingredient.length; i++) {
+            ingredientStack.push(ingredient[i]);
+
+            if(ingredientStack.size()>=4) {
+                int topPosition = ingredientStack.search(1);
+                int topIndex = ingredientStack.size() - topPosition;
+                if(topPosition > 0 && (topPosition + 3) <= ingredientStack.size()) {
+                    int meatIndex = topIndex - 1;
+                    int vegeIndex = topIndex - 2;
+                    int bottomIndex = topIndex - 3;
+
+                    if(ingredientStack.get(meatIndex) == 3 && ingredientStack.get(vegeIndex) == 2
+                    && ingredientStack.get(bottomIndex) == 1) {
+                        answer++;
+                        ingredientStack.remove(topIndex);
+                        ingredientStack.remove(meatIndex);
+                        ingredientStack.remove(vegeIndex);
+                        ingredientStack.remove(bottomIndex);
+                    }
+                }
             }
-            answer++;
-            StringBuilder tmpString = new StringBuilder();
-            tmpString.append(ingredientString.substring(0, firstHam));
-            tmpString.append(ingredientString.substring(firstHam+4, ingredientString.length()));
-            ingredientString = tmpString;
-            System.out.println("새로운 재료 문자열: " + ingredientString);
         }
         return answer;
     }
